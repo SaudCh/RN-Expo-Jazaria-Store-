@@ -1,5 +1,5 @@
 import { extendTheme, NativeBaseProvider } from 'native-base';
-import StackNavigation from './assets/Navigator/MainNavigation';
+import StackNavigation from './assets/Navigator/StackNavigation';
 
 function App() {
 
