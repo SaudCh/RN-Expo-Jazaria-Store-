@@ -1,0 +1,66 @@
+import React, { useEffect, useState } from 'react'
+import { View, StyleSheet, FlatList, ActivityIndicator } from 'react-native'
+import { fireStore } from '../../firebase'
+import Card from './Card'
+
+export default function Home(props) {
+    const { navigation } = props
+    const [data, setData] = useState([])
+    const [filterData, setFilterData] = useState([])
+    const [isLoading, setLoading] = useState(true);
+
+    var newArray = [];
+
+    useEffect(() => {
+
+        //console.log(data)
+    }, []);
+
+    const fetchData = () => {
+        fireStore.collection('products')
+            .get()
+            .then(querySnapshot => {
+                querySnapshot.forEach(documentSnapshot => {
+                    let newProd = documentSnapshot.data()
+                    newProd['id'] = documentSnapshot.id
+                    newArray.push(newProd);
+                });
+                setData(newArray);
+                setFilterData(newArray)
+            })
+            .catch((err) => {
+                console.error(err);
+            })
+            .finally(() => {
+                setLoading(false)
+                console.log('Experiment completed');
+            });
+    }
+
+    return (
+        <View style={{ height: "100%" }}>
+            {isLoading ? (
+                <View style={{ ...styles.activityContainer }}>
+                    <ActivityIndicator size="large" color="red" />
+                </View>
+            ) : (<FlatList
+                data={filterData}
+                renderItem={
+                    ({ item }) => (
+                        <Card data={item} navigation={navigation} />
+                    )
+                }
+                keyExtractor={item => item.id}
+            />)
+            }
+        </View>
+    )
+}
+
+const styles = StyleSheet.create({
+    activityContainer: {
+        height: 400,
+        alignContent: "center",
+        justifyContent: "center",
+    },
+});
